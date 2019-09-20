@@ -1,0 +1,186 @@
+package MyJava1;
+import java.util.Scanner;
+public class AddressBookApp {
+    private static final AddressBookEntry AddressBookEntry = null;
+	private static Scanner dataReader;
+    private static AddressBook book;
+/////////////////////////////CASE-----CASE//////////////////////////////////////////////////////////////////
+    public static void main(String[] args) {            
+        book = new AddressBook(10);
+        dataReader = new Scanner(System.in);
+        
+        boolean lContinue = true;//loop case for menu
+        while (lContinue) {
+            switch (Character.toUpperCase(menu())) {
+                case '1': addBookEntry(); break;                
+                case '2': deleteEntry(); break;
+                case '3': viewAllEntries(); break;
+                case '4': editEntry(); break;
+                case '5': searchEntryByName(); break; 
+                case '6': searchEntryByRecord(); break;
+                case 'X':lContinue = false; break;
+                default:
+                System.out.println("\nInvalid Menu option");
+            }            
+        }
+        System.out.println("\nEnd of program...");
+    }
+////////////////////////PRINT SCREEN//////////////////////////////////////
+    public static char menu() {  
+        char choice;
+        System.out.println("\nAddressBook Menu");
+        System.out.println("1. Add Entry");        
+        System.out.println("2. Delete Entry");
+        System.out.println("3. View all Entries");
+        System.out.println("4. Update an Entry");
+        System.out.println("5. Search Entry By Name");
+        System.out.println("6. Search Entry By Record Number");
+        
+        System.out.println("X. Exit Program");
+        System.out.print("\nSelect Menu Option: ");
+        choice = dataReader.nextLine().charAt(0);
+        return choice;
+    }
+  ////////////////////////----------/////////////////////
+    
+    public static AddressBookEntry getEntryDetails(AddressBookEntry entry) {
+        if( entry == null ) {
+            entry = new AddressBookEntry();
+        }
+        System.out.print("\nName     : "); entry.setName(dataReader.nextLine());
+        System.out.print("Address  : "); entry.setAddress(dataReader.nextLine());
+        System.out.print("Phone No.: "); entry.setTelNo(dataReader.nextLine());
+        System.out.print("Email    : "); entry.setEmailAdd(dataReader.nextLine());
+        return entry;
+    }
+/////////////////////////////////////////////////////////////////////////
+    //*********case '1': addBookEntry();******************///
+    public static void addBookEntry() {
+        AddressBookEntry entry = getEntryDetails(null);
+        if( entry != null ) {
+        book.addAddressBookEntry(entry);
+        }
+    }
+///////////////////////////////////////////////////////
+ //*************case '2': deleteEntry();***************************************************************//
+    
+    public static void deleteEntry() {
+    	System.out.println("Please enter a Record No ");    	
+    	System.out.println("\nSearch Record[no]: ");
+    	Scanner dataReader = new Scanner(System.in);
+    	//int recordNo = dataReader.nextInt();
+    	String searchNo = dataReader.nextLine();
+    	
+    	try{
+    		int recordNo = Integer.parseInt(searchNo);
+    		AddressBookEntry[] entry = book.getAllEntries();             
+       	  		if( entry != null ) {
+       	  		book.deleteAddressBookEntry(recordNo);
+             
+       	  		}
+    	
+           }catch (NumberFormatException e){
+        	 System.out.println("invalid key :" + searchNo);
+             System.out.println(" ");
+             return;
+    	  }
+        	        	
+    }
+    
+    //////////////////////////////////////////////////////////////////////////
+    //*************** case '3': viewAllEntries************************//
+    public static void viewAllEntries() {
+        int validRecords = 0;
+        
+        // get a reference to the Addressbook list
+        AddressBookEntry[] list = book.getAllEntries();
+        if( list.length == 0) {
+            System.out.println("\nList empty...");
+        }
+        
+        for( int i = 0; i < list.length; i++ ) {
+            if( list[i] != null ) {
+                displayEntry(list[i],++validRecords);                
+            }    
+        }
+        System.out.println("No more entries to follow...");
+    }
+    ///////////////////////////////////
+    
+    //***************** case '4': editEntry()*************************//
+    public static void editEntry() {
+        System.out.println("Please enter a Record No ");
+    	System.out.println("\nSearch [Record No:]");
+    	//Scanner dataReader = new Scanner(System.in);
+    	String searchNo = dataReader.nextLine();
+    	try {
+    		int recordNo = Integer.parseInt(searchNo);
+    		AddressBookEntry entry = getEntryDetails(null);
+            		if( entry != null ) {
+            		book.addAddressBookEntry(entry);
+            			
+            		}
+            		book.updateAddressBookEntry( recordNo , AddressBookEntry  );
+    	   }catch (NumberFormatException e) {
+    	   System.out.println("invalid input : " + searchNo );
+    	   System.out.println(" ");
+    	   return;
+           }
+       	
+        }
+ ///////////////////////////////////////
+    //*************** case '5': searchEntryByName()*****************************************//
+    // Search all entries containing name search criteria
+    public static void searchEntryByName() {       
+        System.out.print("\nSearch[Name]: "); 
+        // ensure no extraneous space and search criteria all in lowercase 
+        String name = dataReader.nextLine().trim().toLowerCase();   
+        // get a reference to the Addressbook list
+        AddressBookEntry[] list = book.getAllEntries();  
+        
+        for( int i = 0; i < list.length; i++ ) {   
+            // compare search criteria with every entry 
+            if(list[i]!=null && list[i].getName().toLowerCase().contains(name)) {
+             displayEntry(list[i],i+1); 
+             return;
+            }             
+        }
+       System.out.println("No record found...");        
+    }
+    //************case '6': searchEntryByRecord();*******************//
+    public static void searchEntryByRecord() {         
+    	    	
+    	System.out.println("\nSearch Record[no]: ");
+    	//Scanner dataReader = new Scanner(System.in);
+    	String searchNo = dataReader.nextLine();
+    	try {
+    		int recordNo = Integer.parseInt(searchNo);
+    		AddressBookEntry entry = book.findAddressBookEntryByRecordNo(recordNo) ;
+    		//
+    		if( entry != null ) {
+    			displayEntry (entry , recordNo);
+        		}   		
+       	    
+    	    return;
+    	  
+    	} catch (NumberFormatException e) {
+        System.out.println("invalid input : " + searchNo);
+        System.out.println(" ");
+        return;
+    	}  	     	
+    	   	
+    }
+    	   			
+    //********************************************************************************//
+    // display a single record
+    public static void displayEntry(AddressBookEntry entry, int recordNo) {        
+        System.out.println("\nRecord No. " + recordNo);
+        System.out.println("Name     : " + entry.getName());
+        System.out.println("Address  : " + entry.getAddress());
+        System.out.println("Phone No.: " + entry.getTelNo());
+        System.out.println("Email    : " + entry.getEmailAdd());
+    }
+    //*****************************************//
+   
+    
+}
